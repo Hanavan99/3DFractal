@@ -1,0 +1,31 @@
+//#extension GL_ARB_gpu_shader_fp64 : enable
+
+uniform int iter;
+bool inset = true;
+
+void main() {
+    dvec2 z, c;
+
+    c.x = gl_TexCoord[0].x / 1.4;
+    c.y = gl_TexCoord[0].y;
+    //c.x = 0;
+    //c.y = 0;
+
+    int i;
+    z = c;
+    for(i = 0; i < iter; i++) {
+        float x = (z.x * z.x - z.y * z.y) + c.x;
+        float y = (z.y * z.x + z.x * z.y) + c.y;
+
+        if((x * x + y * y) > 4.0) {
+        	inset = false;
+        	break;
+        }
+        z.x = x;
+        z.y = y;
+    }
+
+    //gl_FragColor = texture2D(tex, 0, (i == iter ? 0.0 : float(i)));
+    gl_FragColor = inset ? vec4(0, 0, 0, 1) : vec4(i / float(iter), 0, (z.x * z.x) + (z.y * z.y) / float(100), 1);
+    //gl_FragColor = hue(0);
+}
